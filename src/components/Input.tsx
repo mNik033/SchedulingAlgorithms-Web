@@ -37,8 +37,8 @@ const Form = styled.form`
 `;
 
 type InputProps = {
-  setArrivalTime?: Dispatch<SetStateAction<string[]>>;
-  setBurstTime?: Dispatch<SetStateAction<string[]>>;
+  setArrivalTime: Dispatch<SetStateAction<string[]>>;
+  setBurstTime: Dispatch<SetStateAction<string[]>>;
 }
 
 const Input = (props: InputProps) => {
