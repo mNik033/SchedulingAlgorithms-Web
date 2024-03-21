@@ -71,7 +71,7 @@ const Table = ({ arrivalTime, burstTime }: TableProps) => {
   });
 
   const total = (array: number[]) =>
-  array.reduce((a, b) => a + b, 0)
+  array.reduce((acc, currentValue) => acc + currentValue, 0); 
 
   const numberOfProcesses = solvedProcessesInfo.length;
   const turnaoundTime = solvedProcessesInfo.map(process => process.tat);
