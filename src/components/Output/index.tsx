@@ -20,8 +20,11 @@ const Output = ({ arrivalTime, burstTime }: OutputProps) => {
   return (
     <StyledOutput>
       <h1>Output</h1>
-      Gannt chart along with the table will be displayed here
-      <Table {...{ arrivalTime, burstTime }} />
+        {!arrivalTime.length || !burstTime.length ? (
+        'Gantt chart and table will be shown here'
+        ) : (
+        <Table {...{ arrivalTime, burstTime }} />
+        )}
     </StyledOutput>
   );
 };
