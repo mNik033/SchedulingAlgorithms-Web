@@ -12,7 +12,7 @@ const Main = styled.main`
 
 const Footer = styled.footer`
   a {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     transition: color 0.3s;
     svg {
