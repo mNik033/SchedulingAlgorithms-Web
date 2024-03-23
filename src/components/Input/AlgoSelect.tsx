@@ -1,31 +1,43 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, Dispatch, SetStateAction } from 'react';
 import Select from 'react-select';
 
-const options = [
-  { 
-    value: 'FCFS',
-    label: 'First Come First Serve',
-  }
+export type AlgoType = 'FCFS' | 'SJF' | 'SRTF';
+type OptionType = {
+  value: AlgoType;
+  label: string;
+}
+export const defaultOption: OptionType = {
+  value: 'FCFS',
+  label: 'First Come First Serve, FCFS',
+};
+const options: OptionType[] = [
+  defaultOption,
+  {
+    value: 'SJF',
+    label: 'Shortest Job First, SJF (non-preemptive)',
+  },
+  {
+    value: 'SRTF',
+    label: 'Shortest Remaining Time First, SRTF',
+  },
 ];
 
-const AlgoSelect = () => {
-  const [selectedOption, setSelectedOption] = useState({
-    value: 'FCFS',
-    label: 'First Come First Serve (FCFS)',
-  });
-
-  useEffect(() => {
-  }, [selectedOption]);
-
+type AlgoSelectProps = {
+  selectedAlgo: {};
+  setSelectedAlgo: Dispatch<SetStateAction<{}>>;
+};
+const AlgoSelect: React.FC<AlgoSelectProps> = ({
+  selectedAlgo,
+  setSelectedAlgo,
+}) => {
   return (
     <Select
-      defaultValue={selectedOption}
-      onChange={setSelectedOption}
+      defaultValue={selectedAlgo}
+      onChange={setSelectedAlgo}
       options={options}
       instanceId="react-select-algo"
       inputId="react-select-algo"
     />
   );
 };
-
 export default AlgoSelect;

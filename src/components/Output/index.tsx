@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import GanttChart from './GanttChart';
 import Table from './Table';
-import { solveFCFS } from './utils/fcfs';
-
+import { solve } from './solve';
+import { AlgoType } from '../Input/AlgoSelect';
 const StyledOutput = styled.div`
   padding: 1rem 2rem 2rem 2rem;
   background: #ffffff;
@@ -14,26 +14,32 @@ const StyledOutput = styled.div`
 `;
 
 type OutputProps = {
-  arrivalTime: string[];
-  burstTime: string[];
+  algo: AlgoType;
+  arrivalTime: number[];
+  burstTime: number[];
 };
 
-const Output = ({ arrivalTime, burstTime }: OutputProps) => {
-  const { solvedProcessesInfo, ganttChartInfo } = solveFCFS(arrivalTime,burstTime);
-
-  return (
-    <StyledOutput>
-      <h1>Output</h1>
-        {!arrivalTime.length || !burstTime.length ? (
-        'Gantt chart and table will be shown here'
-        ) : (
-        <>
-          <GanttChart {...{ganttChartInfo }} />
-          <Table {...{solvedProcessesInfo }} />
-        </>
-        )}
-    </StyledOutput>
-  );
+const Output = ({ algo, arrivalTime, burstTime }: OutputProps) => {
+  if (!arrivalTime.length || !burstTime.length) {
+    return (
+      <StyledOutput>
+        <h1>Output</h1>
+        Gantt chart and table will be shown here
+      </StyledOutput>
+    );
+  } else {
+    const { solvedProcessesInfo, ganttChartInfo } = solve(
+      algo,
+      arrivalTime,
+      burstTime
+    );
+    return (
+      <StyledOutput>
+        <h1>Output</h1>
+        <GanttChart {...{ ganttChartInfo }} />
+        <Table {...{ solvedProcessesInfo }} />
+      </StyledOutput>
+    );
+  }
 };
-
 export default Output;

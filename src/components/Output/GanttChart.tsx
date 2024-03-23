@@ -1,4 +1,4 @@
-import { ganttChartInfoType } from './utils/fcfs';
+import { ganttChartInfoType } from './solve';
 import styled from 'styled-components';
 
 const Container = styled.div`
