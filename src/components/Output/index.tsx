@@ -32,7 +32,7 @@ const Output = ({ algo, arrivalTime, burstTime }: OutputProps) => {
       algo,
       arrivalTime,
       burstTime
-    );
+    )!;
     return (
       <StyledOutput>
         <h1>Output</h1>
