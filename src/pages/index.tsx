@@ -36,6 +36,7 @@ export default function Home() {
   const [selectedAlgo, setSelectedAlgo] = useState(defaultOption);
   const [arrivalTime, setArrivalTime] = useState<number[]>([]);
   const [burstTime, setBurstTime] = useState<number[]>([]);
+  const [timeQuantum, setTimeQuantum] = useState<number>(3);
 
   return (
     <div>
@@ -52,11 +53,13 @@ export default function Home() {
           setSelectedAlgo={setSelectedAlgo}
           setArrivalTime={setArrivalTime}
           setBurstTime={setBurstTime}
+          setTimeQuantum={setTimeQuantum}
         />
         <Output
           algo={selectedAlgo.value}
           arrivalTime={arrivalTime}
           burstTime={burstTime}
+          timeQuantum={timeQuantum}
         />
       </Main>
       <Footer className="container">
