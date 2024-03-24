@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import { ganttChartInfoType } from './solve';
 import styled from 'styled-components';
 import { media } from '../GlobalStyle.css';
@@ -57,11 +58,26 @@ const Time = styled.div`
   }
 `;
 
+const MultilineContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+`;
+
 type GanttChartProps = {
   ganttChartInfo: ganttChartInfoType;
 };
 
 const GanttChart = ({ ganttChartInfo }: GanttChartProps) => {
+  const containerEl = useRef<HTMLDivElement>(null);
+  // const [windowWidth, setWindowWidth] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const [containerWidth, setContainerWidth] = useState<number | null>(null); 
   // [{job, start, stop}]
   const job: string[] = [];
   const time: number[] = [];
@@ -78,21 +94,152 @@ const GanttChart = ({ ganttChartInfo }: GanttChartProps) => {
     }
   });
 
+  useLayoutEffect(() => {
+    function updateSize() {
+      setWindowWidth(window.innerWidth);
+      setContainerWidth(containerEl.current!.offsetWidth);
+    }
+    window.addEventListener('resize', updateSize);
+    updateSize();
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  let itemWidth = 0;
+  if (windowWidth ! <= 600) {
+    itemWidth = 32;
+  } else {
+    itemWidth = 40;
+  }
+
+  const timeContainerWidth = time.length * itemWidth - (time.length - 1);
+
+  let overflowWidth = timeContainerWidth - containerWidth!;
+  let overflowTimeItems = ~~(overflowWidth / itemWidth) + 1;
+  let maxTimeItemCount = time.length - overflowTimeItems;
+
+  let numberOfLines = 0;
+  let acc = 0;
+  while (true) {
+    if (containerWidth === null) {
+      break;
+    }
+    acc += maxTimeItemCount - 1;
+    numberOfLines++;
+    if (acc >= time.length) {
+      acc -= maxTimeItemCount - 1;
+      break;
+    }
+  }
+  let lastLineItemCount = time.length - acc;
+
+  let timeCounter = 0;
+  let jobCounter = 0;
+
   return (
-    <Container>
+    <Container ref={containerEl}>
       <Title>Gantt Chart</Title>
-      <JobContainer>
-        {job.map((job, index) => (
-          <Job key={`gc-job-${index}`} className="flex-center">
-            {job}
-          </Job>
-        ))}
-      </JobContainer>
-      <TimeContainer>
-        {time.map((time, index) => (
-          <Time key={`gc-time-${index}`} className="flex-center">{time}</Time>
-        ))}
-      </TimeContainer>
+      {containerWidth !== null && containerWidth <= timeContainerWidth && (
+        <>
+          {Array.from({ length: numberOfLines }).map((_, ind) => {
+            if (ind === numberOfLines - 1) {
+              return (
+                <MultilineContainer key={`multiline-container-${ind}`}>
+                  <JobContainer>
+                    {Array.from({
+                       length: lastLineItemCount - 1,
+                    }).map((_, i) => (
+                      <Job key={`gc-job-lastline${i}`} className="flex-center">
+                        {job[jobCounter + 1 + i]}
+                      </Job>
+                    ))}
+                  </JobContainer>
+                  <TimeContainer>
+                    {Array.from({
+                      length: lastLineItemCount,
+                    }).map((_, i) => (
+                      <Time
+                        key={`gc-time-lastline${i}`}
+                        className="flex-center"
+                      >
+                        {time[timeCounter + i]}
+                      </Time>
+                    ))}
+                  </TimeContainer>
+                </MultilineContainer>
+              );
+            } else if (ind == 0) {
+              timeCounter += maxTimeItemCount - 1;
+              jobCounter += timeCounter - 1;
+              return (
+                <MultilineContainer key={`multiline-container-${ind}`}>
+                  <JobContainer>
+                  {Array.from({ length: jobCounter + 1 }).map((_, i) => (
+                      <Job key={`gc-job-firstline${i}`} className="flex-center">
+                        {job[i]}
+                      </Job>
+                    ))}
+                  </JobContainer>
+                  <TimeContainer>
+                    {Array.from({ length: timeCounter + ind + 1 }).map(
+                      (_, i) => (
+                        <Time
+                          key={`gc-time-firstline${i}`}
+                          className="flex-center"
+                        >
+                          {time[i]}
+                        </Time>
+                      )
+                    )}
+                  </TimeContainer>
+                </MultilineContainer>
+              );
+            } else {
+              let prevCounter = timeCounter;
+              timeCounter += maxTimeItemCount - 1;
+              let prevJobCounter = jobCounter;
+              jobCounter += maxTimeItemCount - 1;
+              return (
+                <MultilineContainer key={`multiline-container-${ind}`}>
+                  <JobContainer>
+                    {Array.from({ length: maxTimeItemCount - 1 }).map(
+                      (_, i) => (
+                        <Job key={`gc-job-${i}-${ind}`} className="flex-center">
+                          {job[prevJobCounter + i + 1]}
+                        </Job>
+                      )
+                    )}
+                  </JobContainer>
+                  <TimeContainer>
+                    {Array.from({ length: maxTimeItemCount }).map((_, i) => (
+                      <Time key={`gc-time-${i}-${ind}`} className="flex-center">
+                      {time[prevCounter + i]}
+                      </Time>
+                    ))}
+                  </TimeContainer>
+                </MultilineContainer>
+              );
+            }
+          })}
+        </>
+      )}
+      {containerWidth !== null && containerWidth > timeContainerWidth && (
+        <>
+          <JobContainer>
+            {job.map((job, index) => (
+              <Job key={`gc-job-${index}`} className="flex-center">
+                {job}
+              </Job>
+            ))}
+          </JobContainer>
+          <TimeContainer>
+            {time.map((time, index) => (
+              <Time key={`gc-time-${index}`} className="flex-center">
+                {time}
+              </Time>
+            ))}
+          </TimeContainer>
+        </>
+      )}
     </Container>
   );
 };
