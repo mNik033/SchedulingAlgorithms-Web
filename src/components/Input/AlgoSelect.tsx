@@ -2,8 +2,8 @@ import React, { Dispatch, SetStateAction } from 'react';
 import Select from 'react-select';
 import styled from 'styled-components';
 
-export type AlgoType = 'FCFS' | 'SJF' | 'SRTF' | 'RR';
-type OptionType = {
+type AlgoType = 'FCFS' | 'SJF' | 'SRTF' | 'RR';
+export type OptionType = {
   value: AlgoType;
   label: string;
 };

@@ -2,7 +2,7 @@ import { fcfs } from './fcfs';
 import { sjf } from './sjf';
 import { srtf } from './srtf';
 import { rr } from './rr';
-import { AlgoType } from '../../Input/AlgoSelect';
+import { OptionType } from '../../Input/AlgoSelect';
 
 export type ganttChartInfoType = {
   job: string;
@@ -11,12 +11,12 @@ export type ganttChartInfoType = {
 }[];
 
 export const solve = (
-  algo: AlgoType,
+  selectedAlgo: OptionType["value"],
   arrivalTime: number[],
   burstTime: number[],
   timeQuantum: number
 ) => {
-  switch (algo) {
+  switch (selectedAlgo) {
     case 'FCFS':
       return fcfs(arrivalTime, burstTime);
     case 'SJF':

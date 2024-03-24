@@ -56,7 +56,7 @@ export default function Home() {
           setTimeQuantum={setTimeQuantum}
         />
         <Output
-          algo={selectedAlgo.value}
+          selectedAlgo={selectedAlgo}
           arrivalTime={arrivalTime}
           burstTime={burstTime}
           timeQuantum={timeQuantum}
