@@ -7,7 +7,7 @@ export const npp = (arrivalTime: number[], burstTime: number[], priorities: numb
         job: (index + 10).toString(36).toUpperCase(),
         at: item,
         bt: burstTime[index],
-        priority: priorities[index]
+        priority: priorities[index],
       };
     })
     .sort((process1, process2) => {

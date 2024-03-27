@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction } from 'react';
 import Select from 'react-select';
 import styled from 'styled-components';
 
-type AlgoType = 'FCFS' | 'SJF' | 'SRTF' | 'RR' | 'NPP';
+type AlgoType = 'FCFS' | 'SJF' | 'SRTF' | 'RR' | 'NPP' | 'PP';
 export type OptionType = {
   value: AlgoType;
   label: string;
@@ -28,6 +28,10 @@ const options: OptionType[] = [
   {
     value: 'NPP',
     label: 'Priority (non-preemptive)',
+  },
+  {
+    value: 'PP',
+    label: 'Priority (preemptive)',
   },
 ];
 
