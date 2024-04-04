@@ -7,18 +7,19 @@ interface ProcessInfo {
     tat: number;
     wat: number;
   }
-  
+
   import { ganttChartInfoType } from './';
-  
+
   export const pp = (
-    arrivalTime: number[], 
+    arrivalTime: number[],
     burstTime: number[],
-    priorities: number[]
+    priorities: number[],
+    jobIds: string[]
     ) => {
     const processesInfo = arrivalTime
       .map((item, index) => {
         return {
-          job: (index + 10).toString(36).toUpperCase(),
+          job: jobIds[index],
           at: item,
           bt: burstTime[index],
           priority: priorities[index],
@@ -31,10 +32,10 @@ interface ProcessInfo {
         if (process1.priority < process2.priority) return -1;
         return 0;
       });
-  
+
     const solvedProcessesInfo: ProcessInfo[] = [];
     const ganttChartInfo: ganttChartInfoType = [];
-  
+
     const readyQueue: {
       job: string;
       at: number;
@@ -43,12 +44,12 @@ interface ProcessInfo {
     }[] = [];
     let currentTime = processesInfo[0].at;
     const unfinishedJobs = [...processesInfo];
-  
+
     const remainingTime = processesInfo.reduce((acc, process) => {
       acc[process.job] = process.bt;
       return acc;
     }, {});
-  
+
     readyQueue.push(unfinishedJobs[0]);
     while (
       Object.values(remainingTime).reduce((acc: number, cur: number) => {
@@ -64,23 +65,23 @@ interface ProcessInfo {
         prevIdle = true;
         readyQueue.push(unfinishedJobs[0]);
       }
-  
+
       readyQueue.sort((a, b) => {
         // Equal-priority processes are scheduled in FCFS order.
         if (a.priority > b.priority) return 1;
         if (a.priority < b.priority) return -1;
         return 0;
       });
-  
+
       const processToExecute = readyQueue[0];
-  
+
       if (processToExecute) { // Add a check for undefined
         const processATLessThanBT = processesInfo.filter((p) => {
           let curr: number = currentTime;
           if (prevIdle) {
             curr = processToExecute.at;
           }
-  
+
           return (
             p.at <= remainingTime[processToExecute.job] + curr &&
             p !== processToExecute &&
@@ -88,19 +89,19 @@ interface ProcessInfo {
             unfinishedJobs.includes(p)
           );
         });
-  
+
         let gotInterruption = false;
         processATLessThanBT.some((p) => {
           if (prevIdle) {
             currentTime = processToExecute.at;
           }
-  
+
           const amount = p.at - currentTime;
-  
+
           if (currentTime >= p.at) {
             readyQueue.push(p);
           }
-  
+
           if (p.priority < processToExecute.priority) {
             remainingTime[processToExecute.job] -= amount;
             readyQueue.push(p);
@@ -123,22 +124,22 @@ interface ProcessInfo {
             unfinishedJobs.includes(p)
           );
         });
-  
+
         // Push new processes to readyQueue
         readyQueue.push(...processToArrive);
-  
+
         if (!gotInterruption) {
           if (prevIdle) {
             const remainingT = remainingTime[processToExecute.job];
             remainingTime[processToExecute.job] -= remainingT;
             currentTime = processToExecute.at + remainingT;
-  
+
             processATLessThanBT.forEach(p => {
               if (currentTime >= p.at) {
                 readyQueue.push(p);
               }
             });
-  
+
             ganttChartInfo.push({
               job: processToExecute.job,
               start: processToExecute.at,
@@ -149,27 +150,27 @@ interface ProcessInfo {
             remainingTime[processToExecute.job] -= remainingT;
             const prevCurrentTime = currentTime;
             currentTime += remainingT;
-  
+
             processATLessThanBT.forEach(p => {
               if (currentTime >= p.at) {
                 readyQueue.push(p);
               }
             });
-  
+
             ganttChartInfo.push({
               job: processToExecute.job,
               start: prevCurrentTime,
               stop: currentTime
             });
-          }      
+          }
         }
-  
+
         // Requeueing (move head/first item to tail/last)
         const shiftedProcess = readyQueue.shift(); // Shift the process
         if (shiftedProcess) {
           readyQueue.push(shiftedProcess); // Only push if it's not undefined
         }
-  
+
         // When the process finished executing
         if (remainingTime[processToExecute.job] === 0) {
           const indexToRemoveUJ = unfinishedJobs.indexOf(processToExecute);
@@ -180,7 +181,7 @@ interface ProcessInfo {
           if (indexToRemoveRQ > -1) {
             readyQueue.splice(indexToRemoveRQ, 1);
           }
-  
+
           solvedProcessesInfo.push({
             ...processToExecute,
             ft: currentTime,
@@ -190,7 +191,7 @@ interface ProcessInfo {
         }
       }
     }
-  
+
     // Sort the processes by job name within arrival time
     solvedProcessesInfo.sort((obj1, obj2) => {
       if (obj1.at > obj2.at) return 1;
@@ -199,7 +200,6 @@ interface ProcessInfo {
       if (obj1.job < obj2.job) return -1;
       return 0;
     });
-  
+
     return { solvedProcessesInfo, ganttChartInfo };
   };
-  

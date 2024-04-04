@@ -16,22 +16,23 @@ export const solve = (
   selectedAlgo: OptionType["value"],
   arrivalTime: number[],
   burstTime: number[],
+  jobIds: string[],
   timeQuantum: number,
   priorities: number[]
 ) => {
   switch (selectedAlgo) {
     case 'FCFS':
-      return fcfs(arrivalTime, burstTime);
+      return fcfs(arrivalTime, burstTime, jobIds);
     case 'SJF':
-      return sjf(arrivalTime, burstTime);
+      return sjf(arrivalTime, burstTime, jobIds);
     case 'SRTF':
-      return srtf(arrivalTime, burstTime);
+      return srtf(arrivalTime, burstTime, jobIds);
     case 'RR':
-      return rr(arrivalTime, burstTime, timeQuantum);
+      return rr(arrivalTime, burstTime, timeQuantum, jobIds);
     case 'NPP':
-      return npp(arrivalTime, burstTime, priorities);
+      return npp(arrivalTime, burstTime, priorities, jobIds);
     case 'PP':
-      return pp(arrivalTime, burstTime, priorities);
+      return pp(arrivalTime, burstTime, priorities, jobIds);
     default:
       break;
   }
