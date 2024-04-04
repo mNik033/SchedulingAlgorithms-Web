@@ -1,9 +1,9 @@
 import { ganttChartInfoType } from './';
-export const sjf = (arrivalTime: number[], burstTime: number[]) => {
+export const sjf = (arrivalTime: number[], burstTime: number[],  jobIds: string[]) => {
   const processesInfo: { job: string; at: number; bt: number }[] = arrivalTime
   .map((item, index) => {
     return {
-      job: (index + 10).toString(36).toUpperCase(),
+      job: jobIds[index],
       at: item,
       bt: burstTime[index],
     };
@@ -21,7 +21,7 @@ export const sjf = (arrivalTime: number[], burstTime: number[]) => {
   const solvedProcessesInfo: {job: string;at: number;bt: number;ft: number;tat: number;wat: number;}[] = [];
   const readyQueue: { job: string; at: number; bt: number }[] = [];
   const finishedJobs: { job: string; at: number; bt: number }[] = [];
-  
+
   for (let i = 0; i < processesInfo.length; i++) {
     if (i === 0) {
       readyQueue.push(processesInfo[0]);

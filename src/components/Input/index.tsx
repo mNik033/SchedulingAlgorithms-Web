@@ -44,7 +44,7 @@ const Form = styled.form`
       background-color: #fafafa;
       border-color: rgb(179, 179, 179);
     }
-    
+
     &:focus {
       border-color: #2684ff;
       background-color: #FFF;
@@ -88,8 +88,17 @@ type InputProps = {
   setSelectedAlgo: Dispatch<SetStateAction<{}>>;
   setArrivalTime: Dispatch<SetStateAction<number[]>>;
   setBurstTime: Dispatch<SetStateAction<number[]>>;
+  setJobIds: Dispatch<SetStateAction<string[]>>
   setTimeQuantum: Dispatch<SetStateAction<number>>;
   setPriorities: Dispatch<SetStateAction<number[]>>;
+};
+
+const generateDefaultJobIds = (length: number) => {
+  const defaultIds: string[] = [];
+  for (let i = 1; i <= length; i++) {
+    defaultIds.push(`P${i}`);
+  }
+  return defaultIds;
 };
 
 const Input = (props: InputProps) => {
@@ -98,18 +107,23 @@ const Input = (props: InputProps) => {
   const [burstTime, setBurstTime] = useState('');
   const [timeQuantum, setTimeQuantum] = useState('');
   const [priorities, setPriorities] = useState('');
+  const [jobIds, setJobIdsInput] = useState('');
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const arrivalTimeArr = arrivalTime
       .trim()
       .split(/\s+/)
-      .map((at) => parseInt(at));    
+      .map((at) => parseInt(at));
     const burstTimeArr = burstTime
       .trim()
       .split(/\s+/)
       .map((bt) => parseInt(bt));
     const timeQuantumInt = parseInt(timeQuantum);
+    const jobIdsArr = jobIds
+      .trim()
+      .split(/\s+/)
+      .map((jobId) => jobId.trim());
     let prioritiesArr = priorities
       .trim()
       .split(/\s+/)
@@ -123,6 +137,11 @@ const Input = (props: InputProps) => {
         'Invalid input: number of the arrival times and burst times do not match'
       );
       return;
+    } else if (jobIds.trim() && arrivalTimeArr.length !== jobIdsArr.length) {
+      alert(
+        'Invalid input: number of the arrival/burst times and job IDs do not match'
+      );
+      return;
     } else if (
       arrivalTimeArr.includes(NaN) ||
       burstTimeArr.includes(NaN) ||
@@ -131,10 +150,29 @@ const Input = (props: InputProps) => {
       alert('Invalid input: please enter only integers');
       return;
     } else if (
+      arrivalTimeArr.includes(NaN) ||
+      burstTimeArr.includes(NaN) ||
+      ((selectedAlgo.value === 'PP' || selectedAlgo.value ==='NPP') && prioritiesArr.some( (p) => p < 0 )) )
+    {
+      alert('Invalid input: please enter only integers');
+      return;
+    } else if (
+      arrivalTimeArr.includes(NaN) ||
+      burstTimeArr.includes(NaN) ||
+      ((selectedAlgo.value === 'PP' || selectedAlgo.value ==='NPP') && arrivalTimeArr.length !== prioritiesArr.length))
+    {
+      alert(
+        'Invalid input: number of the arrival/burst times and priorities do not match'
+      );
+      return;
+    }else if (
       arrivalTimeArr.some((t) => t < 0) ||
       burstTimeArr.some((t) => t < 0)
     ) {
       alert('Invalid input: negative numbers are invalid');
+      return;
+    } else if (jobIdsArr.some((jobId, index) => jobIdsArr.indexOf(jobId) !== index)) {
+      alert('Invalid input: Job IDs must be unique');
       return;
     }
 
@@ -153,8 +191,15 @@ const Input = (props: InputProps) => {
     props.setSelectedAlgo(selectedAlgo);
     props.setArrivalTime(arrivalTimeArr);
     props.setBurstTime(burstTimeArr);
+    props.setJobIds(jobIdsArr);
     props.setTimeQuantum(timeQuantumInt);
     props.setPriorities(prioritiesArr);
+
+    if (!jobIds.trim()) {
+      const defaultIds = generateDefaultJobIds(arrivalTime.trim().split(/\s+/).length);
+      props.setJobIds(defaultIds)
+    }
+
   };
 
   const handleArrivalTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,6 +207,9 @@ const Input = (props: InputProps) => {
   };
   const handleBurstTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBurstTime(e.target.value);
+  };
+  const handleJobIdsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setJobIdsInput(e.target.value);
   };
   const handleTimeQuantumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTimeQuantum(e.target.value);
@@ -199,6 +247,15 @@ const Input = (props: InputProps) => {
             placeholder="e.g. 2 4 6 8 10"
           />
         </fieldset>
+        <fieldset>
+      <label htmlFor="job-ids">Process IDs</label>
+      <input
+        onChange={handleJobIdsChange}
+        type="text"
+        id="job-ids"
+        placeholder="e.g. P1 P2 P3 (optional)"
+      />
+    </fieldset>
         {selectedAlgo.value === 'RR' && (
           <fieldset>
             <label htmlFor="time-quantum">Time Quantum</label>

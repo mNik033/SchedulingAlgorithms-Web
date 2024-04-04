@@ -3,12 +3,13 @@ import { ganttChartInfoType } from './';
 export const rr = (
   arrivalTime: number[],
   burstTime: number[],
-  timeQuantum: number
+  timeQuantum: number,
+  jobIds: string[]
 ) => {
   const processesInfo = arrivalTime
     .map((item, index) => {
       return {
-        job: (index + 10).toString(36).toUpperCase(),
+        job: jobIds[index],
         at: item,
         bt: burstTime[index],
       };

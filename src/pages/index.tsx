@@ -36,6 +36,7 @@ export default function Home() {
   const [selectedAlgo, setSelectedAlgo] = useState(defaultOption);
   const [arrivalTime, setArrivalTime] = useState<number[]>([]);
   const [burstTime, setBurstTime] = useState<number[]>([]);
+  const [jobIds, setJobIds] = useState<string[]>([]);
   const [timeQuantum, setTimeQuantum] = useState<number>(3);
   const [priorities, setPriorities] = useState<number[]>([]);
 
@@ -54,6 +55,7 @@ export default function Home() {
           setSelectedAlgo={setSelectedAlgo}
           setArrivalTime={setArrivalTime}
           setBurstTime={setBurstTime}
+          setJobIds={setJobIds}
           setTimeQuantum={setTimeQuantum}
           setPriorities={setPriorities}
         />
@@ -61,6 +63,7 @@ export default function Home() {
           selectedAlgo={selectedAlgo}
           arrivalTime={arrivalTime}
           burstTime={burstTime}
+          jobIds={jobIds}
           timeQuantum={timeQuantum}
           priorities={priorities}
         />

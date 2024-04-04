@@ -78,11 +78,12 @@ type OutputProps = {
   selectedAlgo: OptionType;
   arrivalTime: number[];
   burstTime: number[];
+  jobIds: string[];
   timeQuantum: number;
   priorities: number[];
 };
 
-const Output = ({ selectedAlgo, arrivalTime, burstTime, timeQuantum, priorities }: OutputProps) => {
+const Output = ({ selectedAlgo, arrivalTime, burstTime, jobIds, timeQuantum, priorities }: OutputProps) => {
   if (!arrivalTime.length || !burstTime.length) {
     return (
       <StyledOutput>
@@ -97,6 +98,7 @@ const Output = ({ selectedAlgo, arrivalTime, burstTime, timeQuantum, priorities 
       selectedAlgo.value,
       arrivalTime,
       burstTime,
+      jobIds,
       timeQuantum,
       priorities
     )!;
